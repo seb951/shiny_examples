@@ -1,14 +1,6 @@
 #
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
-source("~/Documents/git_repos/shiny_examples/fun.R")
+source("~/Documents/git_repos/shiny_examples/R/example_functions.R")
 
 shinyServer(function(input, output,session) {
     
