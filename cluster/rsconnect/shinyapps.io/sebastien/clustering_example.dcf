@@ -1,0 +1,14 @@
+name: clustering_example
+title: clustering_example
+username:
+account: sebastien
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7430294
+bundleId: 6443969
+url: https://sebastien.shinyapps.io/clustering_example/
+when: 1666808508.41434
+lastSyncTime: 1666808508.41435
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: R/.Rhistory

@@ -38,7 +38,7 @@ renderpca = function(data = meso[2],pcX=1,pcY=2,k = 2,
 
 
 
-read_mesothelioma = function(path = "~/Documents/git_repos/shiny_examples/data/"){
+read_mesothelioma = function(path = "data/"){
 ###meso data:https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data
   
   

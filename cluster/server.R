@@ -1,6 +1,6 @@
 #
 library(shiny)
-source("~/Documents/git_repos/shiny_examples/R/clustering.R")
+source("R/clustering.R")
 
 shinyServer(function(input, output,session) {
     
@@ -37,7 +37,7 @@ shinyServer(function(input, output,session) {
     ###
     output$text_cluster <- renderUI({
         para4 <- "Below, I have a little example of clustering based on kmeans, pca and silhouette score"
-        para5 <- "I use a mesothelimia gene expression dataset from <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'>here</a>. This contains VST normalised gene expression data. I filtered out low expressed genes and kept only 10% most variable genes to speed things up."
+        para5 <- "I use a mesothelioma clinical and gene expression dataset from <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'>here</a>. This contains VST normalised gene expression data. I filtered out low expressed genes and kept only 10% most variable genes to speed things up."
         
         HTML(paste(para4,para5, sep = '<br/><br/>'))
         
