@@ -23,7 +23,7 @@ shinyUI(fluidPage(
             plotOutput("summary_data")
         )),
     
-    
+    htmlOutput("text_cluster_gene_expression"),
     sidebarLayout(
         sidebarPanel(
             sliderInput("krange","Select a K range to calculate Silhouette",min = 2, max = 8, value = c(2, 5))),

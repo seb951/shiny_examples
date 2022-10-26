@@ -5,10 +5,10 @@ account: sebastien
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 7430294
-bundleId: 6443969
+bundleId: 6444043
 url: https://sebastien.shinyapps.io/clustering_example/
-when: 1666808508.41434
-lastSyncTime: 1666808508.41435
+when: 1666809972.29015
+lastSyncTime: 1666809972.29016
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: R/.Rhistory
