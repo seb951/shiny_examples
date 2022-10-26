@@ -1,10 +1,15 @@
 #
 library(shiny)
-source("~/Documents/git_repos/shiny_examples/R/example_functions.R")
+source("~/Documents/git_repos/shiny_examples/R/clustering.R")
 
 shinyServer(function(input, output,session) {
     
     meso = read_mesothelioma()
+                 
+    output$mesotable = DT::renderDataTable({
+        meso[[1]]})
+    
+    
     output$pca = renderPlot({
         renderpca(data=meso[[2]],
                  pcX=as.numeric(input$pc[1]),
@@ -38,6 +43,9 @@ shinyServer(function(input, output,session) {
         
     })
     
+    output$summary_data = renderPlot({
+        render_summary_data(clinical = meso[[1]],variable = input$variable) 
+    })
     
     
     

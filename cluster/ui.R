@@ -1,7 +1,7 @@
 #
 library(shiny)
 library(cluster)
-
+library(DT)
 
 
 shinyUI(fluidPage(
@@ -35,7 +35,16 @@ shinyUI(fluidPage(
         )),
     
     
+    h2("The mesotheliama clinical data"),
+    DT::dataTableOutput("mesotable"),
     
+    h2("Summmarize data below:"),
+    sidebarLayout(
+        sidebarPanel(
+            radioButtons("variable", "Choose a clinical variable to display:",selected = "years_to_birth",choices= c("years_to_birth","pathologic_stage","histological_type","gender","overall_survival"))),
+        mainPanel(
+            plotOutput("summary_data")
+        )),
     
     
 )

@@ -1,6 +1,6 @@
 #
 library(shiny)
-source("~/Documents/git_repos/shiny_examples/R/example_functions.R")
+source("~/Documents/git_repos/shiny_examples/R/phylo.R")
 
 shinyServer(function(input, output,session) {
     output$plot1 <- renderPlot({
