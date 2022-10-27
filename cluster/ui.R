@@ -2,28 +2,18 @@
 library(shiny)
 library(cluster)
 library(DT)
-
+library(wesanderson)
 
 shinyUI(fluidPage(
     
     # Application title
-    titlePanel("Clustering example: mesothelioma gene expression dataset"),
+    titlePanel("Clustering example: mesothelioma dataset"),
     h4("sebastien.renaut@gmail.com"),
     h4("fall 2022"),
-    htmlOutput("text_cluster"),
+    htmlOutput("general"),
     
-    h4("The Mesothelioma Clinical Dataset"),
-    DT::dataTableOutput("mesotable"),
-    
-    h4("Summmarized data below:"),
-    sidebarLayout(
-        sidebarPanel(
-            radioButtons("variable", "Choose a clinical variable to display:",selected = "years_to_birth",choices= c("years_to_birth","pathologic_stage","histological_type","gender","overall_survival"))),
-        mainPanel(
-            plotOutput("summary_data")
-        )),
-    
-    htmlOutput("text_cluster_gene_expression"),
+    h4("The Mesothelioma Gene Expression Dataset"),
+    htmlOutput("gene_expression"),
     sidebarLayout(
         sidebarPanel(
             sliderInput("krange","Select a K range to calculate Silhouette",min = 2, max = 8, value = c(2, 5))),
@@ -50,6 +40,19 @@ shinyUI(fluidPage(
         )),
     
 
+    
+    h4("The Mesothelioma Clinical Dataset"),
+    htmlOutput("clinical"),
+    DT::dataTableOutput("mesotable"),
+    
+    h4("Summmarized data below:"),
+    sidebarLayout(
+        sidebarPanel(
+            radioButtons("variable", "Choose a clinical variable to display:",selected = "age",choices= c("cluster","age","stage","histology","gender","survival"))),
+        mainPanel(
+            plotOutput("summary_data")
+        ))
+    
     
 )
 )

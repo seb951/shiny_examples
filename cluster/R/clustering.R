@@ -1,12 +1,16 @@
 
+library(cluster)
+library(DT)
+library(wesanderson)
 
+
+
+wes_colors = c(wes_palettes$GrandBudapest1,wes_palettes$GrandBudapest2,wes_palettes$Zissou1,wes_palettes$Rushmore)
 ###
-rendersilhouette <- function(data =  mtcars, k_start=2,k_end=5,
-                                   pca_factors=1:ncol(data))
+rendersilhouette <- function(data.pca =  data.pca, k_start=2,k_end=5,
+                                   pca_factors=1:ncol(data), colors = wes_colors)
   {
-  #pca on what variables
-  data.pca <- prcomp(data[,pca_factors], center = TRUE,scale. = TRUE)
-  
+  #k results
   multi_k = data.frame(k=k_start:k_end,mean_sil=0)
   
   
@@ -15,24 +19,20 @@ rendersilhouette <- function(data =  mtcars, k_start=2,k_end=5,
     ss <- silhouette(km$cluster, dist(data.pca$x))
     multi_k[k-1,2] = mean(ss[, 3])
   }
-  plot(multi_k[,1], type='b', multi_k[,2],main="Silhouette score \n Mesotheliama gene expression dataset", xlab='Number of clusters (k)', ylab='Average Silhouette Scores', frame=FALSE)
+  plot(multi_k[,1], type='b', col=colors, pch = 19, lwd = 3,multi_k[,2],main="Silhouette score \n Mesotheliama gene expression dataset", xlab='Number of clusters (k)', ylab='Average Silhouette Scores', frame=FALSE)
 }
 
 ###
-renderpca = function(data = meso[2],pcX=1,pcY=2,k = 2,
-                    pca_factors=1:ncol(data))
+renderpca = function(data.pca=data.pca,pcX=1,pcY=2,k = 2,colors = wes_colors)
   {
-  #pca on what variables
-  data.pca <- prcomp(data[,pca_factors], center = TRUE,scale. = TRUE)
-
+  #kmeans
   km <- kmeans(data.pca$x[,1:10], centers = k, nstart=25)
-  
-  colors = rainbow(length(unique(km$cluster)))
+  colors= colors[1:length(unique(km$cluster))]
   
   colors_val <- lapply(data.frame(km$cluster), function(x) as.character(factor(km$cluster, labels=colors)))
   colors_val = as.character(colors_val$km.cluster)
   
-  plot(data.pca$x[,pcX],data.pca$x[,pcY],xlab = paste0("PC",pcX),ylab = paste0("PC",pcY),col=colors_val,pch=8,main = "PCA & k grouping \n mesotheliama gene expression dataset")
+  plot(data.pca$x[,pcX],data.pca$x[,pcY],xlab = paste0("PC",pcX),ylab = paste0("PC",pcY),col=colors_val,pch=19,lwd=3,main = "PCA & k grouping \n mesotheliama gene expression dataset")
   #biplot(data,choices=c(pcX,pcY))
   }
 
@@ -54,6 +54,7 @@ read_mesothelioma = function(path = "data/"){
 
     clinical <- readr::read_tsv(file_clinical)
     rnaseq <- readr::read_tsv(file_rnaseq)
+    
     write.csv(clinical,paste0(path,"clinical_meso.csv"),row.names=F)
   
     ###most expressed, 10% most variables genes (smaller dataset, keeping a lot of the signal)
@@ -78,34 +79,34 @@ read_mesothelioma = function(path = "data/"){
   clinical = as.data.frame(clinical)
   clinical$years_to_birth = as.numeric(clinical$years_to_birth)
   clinical$overall_survival = as.numeric(clinical$overall_survival)
-  
+  clinical = clinical[match(colnames(rnaseq_most_expressed),rownames(clinical)),]
   list(clinical,t(rnaseq_most_expressed))
 }
 
 
-render_summary_data = function(clinical = clinical,variable = colnames(clinical)) {
-  if(variable == c("overall_survival"))
+render_summary_data = function(clinical = clinical,variable = colnames(clinical),colors = wes_colors) {
+  if(variable == c("survival"))
   {
-    hist(clinical[,variable],breaks =10,xlab = 'days of survival',ylab = "Number of patients",main = "Survival rates since diagnosis")
+    hist(clinical[,variable],breaks =10,col = colors,xlab = 'days of survival',ylab = "Number of patients",main = "Survival rates since diagnosis")
   }
   
-  if(variable == c("years_to_birth"))
+  if(variable == c("age"))
   {
-    hist(clinical[,variable],breaks =10,xlab = 'Age (years)',ylab = "Number of patients",main = "Age at diagnosis")
+    hist(clinical[,variable],breaks =10,col = colors,xlab = 'Age (years)',ylab = "Number of patients",main = "Age at diagnosis")
   }
   
-  if(variable == c("pathologic_stage"))
+  if(variable == c("stage"))
   {
     summary = rle(sort(clinical[,variable]))
-    summary = data.frame(Pathologic_stage = summary$values,Nb_of_patients = summary$lengths)
-    barplot(Nb_of_patients ~ Pathologic_stage, data = summary,main ="pathologic_stage")
+    summary = data.frame(stage = summary$values,Nb_of_patients = summary$lengths)
+    barplot(Nb_of_patients ~ stage, data = summary,main ="stage",col = colors,ylab = "Number of patients")
   }
   
-  if(variable == c("histological_type"))
+  if(variable == c("histology"))
   {
     summary = rle(sort(clinical[,variable]))
-    summary = data.frame(histological_type = summary$values,Nb_of_patients = summary$lengths)
-    barplot(Nb_of_patients ~ histological_type, data = summary,main ="histological_type")
+    summary = data.frame(histology = summary$values,Nb_of_patients = summary$lengths)
+    barplot(Nb_of_patients ~ histology, data = summary,main ="histology",col = colors,ylab = "Number of patients")
     
   }
   
@@ -113,7 +114,15 @@ render_summary_data = function(clinical = clinical,variable = colnames(clinical)
   {
     summary = rle(sort(clinical[,variable]))
     summary = data.frame(gender = summary$values,Nb_of_patients = summary$lengths)
-    barplot(Nb_of_patients ~ gender, data = summary,main ="gender")
+    barplot(Nb_of_patients ~ gender, data = summary,main ="gender",col = colors,ylab = "Number of patients")
+    
+  }
+  
+  if(variable == c("cluster"))
+  {
+    summary = rle(sort(clinical[,variable]))
+    summary = data.frame(cluster = summary$values,Nb_of_patients = summary$lengths)
+    barplot(Nb_of_patients ~ cluster, data = summary,main ="cluster",col = colors,ylab = "Number of patients")
     
   }
   
