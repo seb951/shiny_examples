@@ -19,7 +19,7 @@ rendersilhouette <- function(data.pca =  data.pca, k_start=2,k_end=5,
     ss <- silhouette(km$cluster, dist(data.pca$x))
     multi_k[k-1,2] = mean(ss[, 3])
   }
-  plot(multi_k[,1], type='b', col=colors, pch = 19, lwd = 3,multi_k[,2],main="Silhouette score \n Mesotheliama gene expression dataset", xlab='Number of clusters (k)', ylab='Average Silhouette Scores', frame=FALSE)
+  plot(multi_k[,1], type='b', col=colors, pch = 19, lwd = 3,multi_k[,2],main="Silhouette score \n gene expression dataset", xlab='Number of clusters (k)', ylab='Average Silhouette Scores', frame=FALSE)
 }
 
 ###
@@ -32,7 +32,7 @@ renderpca = function(data.pca=data.pca,pcX=1,pcY=2,k = 2,colors = wes_colors)
   colors_val <- lapply(data.frame(km$cluster), function(x) as.character(factor(km$cluster, labels=colors)))
   colors_val = as.character(colors_val$km.cluster)
   
-  plot(data.pca$x[,pcX],data.pca$x[,pcY],xlab = paste0("PC",pcX),ylab = paste0("PC",pcY),col=colors_val,pch=19,lwd=3,main = "PCA & k grouping \n mesotheliama gene expression dataset")
+  plot(data.pca$x[,pcX],data.pca$x[,pcY],xlab = paste0("PC",pcX),ylab = paste0("PC",pcY),col=colors_val,pch=19,lwd=3,main = "PCA & k grouping \n gene expression dataset")
   #biplot(data,choices=c(pcX,pcY))
   }
 
@@ -68,20 +68,60 @@ read_mesothelioma = function(path = "data/"){
     }
     rnaseq_most_expressed_var = rnaseq_most_expressed[sd>quantile(sd,seq(0,1,by=0.1))[10],]
     write.csv(rnaseq_most_expressed_var,paste0(path,"rnaseq_most_expr_meso.csv"),row.names=F)
-  }
   
-  if(file.exists(paste0(path,"rnaseq_most_expr_meso.csv")) == T)
+    #final cleanup
+    rnaseq_most_expressed = read.csv(paste0(path,"rnaseq_most_expr_meso.csv"),row.names = 1)
+    clinical = read.csv(paste0(path,"clinical_meso.csv"),row.names = 1)
+    clinical = t(clinical)
+    clinical = clinical[,colnames(clinical) %in% c("years_to_birth","pathologic_stage","histological_type","gender","overall_survival")]
+    clinical = as.data.frame(clinical)
+    clinical$years_to_birth = as.numeric(clinical$years_to_birth)
+    clinical$overall_survival = as.numeric(clinical$overall_survival)
+    clinical = clinical[match(colnames(rnaseq_most_expressed),rownames(clinical)),]
+    colnames(clinical) = c("age","stage","histology","gender","survival")
+    write.csv(clinical,paste0(path,"clinical_meso.csv"),row.names=T)
+    
+    }
   
-  rnaseq_most_expressed = read.csv(paste0(path,"rnaseq_most_expr_meso.csv"),row.names = 1)
-  clinical = read.csv(paste0(path,"clinical_meso.csv"),row.names = 1)
-  clinical = t(clinical)
-  clinical = clinical[,colnames(clinical) %in% c("years_to_birth","pathologic_stage","histological_type","gender","overall_survival")]
-  clinical = as.data.frame(clinical)
-  clinical$years_to_birth = as.numeric(clinical$years_to_birth)
-  clinical$overall_survival = as.numeric(clinical$overall_survival)
-  clinical = clinical[match(colnames(rnaseq_most_expressed),rownames(clinical)),]
-  list(clinical,t(rnaseq_most_expressed))
+  if((file.exists(paste0(path,"rnaseq_most_expr_meso.csv")) == T)) {
+    rnaseq_most_expressed = read.csv(paste0(path,"rnaseq_most_expr_meso.csv"),row.names = 1)
+    clinical = read.csv(paste0(path,"clinical_meso.csv"),row.names = 1)
+    
+  
+  temp = list(clinical,t(rnaseq_most_expressed))}
+
+  
 }
+
+read_data_gexp = function(file=NULL){
+  
+  if(!is.null(file)) {
+    ext <- tools::file_ext(file)
+    
+    req(file)
+    validate(need(ext == "csv", "Please upload a csv file"))
+    
+    temp = t(read.csv(file, header = T,row.names = 1))
+  }
+  temp
+}
+
+
+
+read_data_clinical = function(file=NULL){
+  
+  if(!is.null(file)) {
+    ext <- tools::file_ext(file)
+    
+    req(file)
+    validate(need(ext == "csv", "Please upload a csv file"))
+    
+    temp = read.csv(file, header = T,row.names = 1)
+  }
+  temp
+}
+  
+  
 
 
 render_summary_data = function(clinical = clinical,variable = colnames(clinical),colors = wes_colors) {
@@ -125,7 +165,20 @@ render_summary_data = function(clinical = clinical,variable = colnames(clinical)
     barplot(Nb_of_patients ~ cluster, data = summary,main ="cluster",col = colors,ylab = "Number of patients")
     
   }
-  
-  
-  
 }
+
+
+render_detailed_silhouette = function(input_pca_data = data.pca,k = 2,colors = wes_colors){
+  km <- kmeans(input_pca_data$x[,1:10], centers = k, nstart=25)
+  ss <- silhouette(km$cluster, dist(input_pca_data$x))
+  plot(ss,col = colors[1:k],nmax = 10,main = paste0("Detailed Silhouette plot for k = ",k))
+}
+
+
+
+
+toto = function(data.pca=data.pca,k = 2,colors = wes_colors){
+  
+  plot(1:10)
+}
+  
