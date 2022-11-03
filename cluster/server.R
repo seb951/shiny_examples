@@ -1,5 +1,8 @@
 #
 library(shiny)
+library(cluster)
+library(DT)
+library(wesanderson)
 source("R/clustering.R")
 
 shinyServer(function(input, output,session) {
@@ -22,6 +25,9 @@ shinyServer(function(input, output,session) {
  
         
     data.pca <- prcomp(data[[2]][,1:ncol(data[[2]])], center = TRUE,scale. = TRUE)
+    data.dist = dist(data[[2]])
+    cl <- hclust(data.dist)
+    
     output$pca = renderPlot({
         renderpca(data.pca,
                  pcX=as.numeric(input$pc[1]),
@@ -36,9 +42,14 @@ shinyServer(function(input, output,session) {
                          k_end=10)
     })
     output$detailedsil = renderPlot({
-      render_detailed_silhouette(input_pca_data = data.pca,k = input$k_selected)
+      render_detailed_silhouette(input_data = data[[2]],k = input$k_selected,type = "kmeans")
     })
     
+    output$heatmap = renderPlot({
+      hc(gexp = data[[2]])})
+    
+    output$detailedsil_hc = renderPlot({
+      render_detailed_silhouette(input_data = data[[2]],k = input$k_selected_hc,type = "dendrogram")})
     
 
     observe({
@@ -56,13 +67,22 @@ shinyServer(function(input, output,session) {
     ####CLINICAL
     observe({
       km = kmeans(data.pca$x[,1:10], centers = input$k_selected, nstart=25)
-      clinical2 = data.frame(cluster=km$cluster,data[[1]])
+      sil_cl <- silhouette(cutree(cl, k=input$k_selected_hc) ,data.dist, title=title(main = 'Good'))
+      clinical2 = data.frame(kmeans=km$cluster,dendrogram=sil_cl[,2],data[[1]])
       output$mesotable = DT::renderDataTable({clinical2})
       
       output$summary_data = renderPlot({
         render_summary_data(clinical = clinical2,variable = input$variable) 
         
-        
+      
+        output$downloadData <- downloadHandler(
+          filename = function() {
+            paste('clinical_cluster_data_', Sys.Date(), '.csv', sep='')
+          },
+          content = function(con) {
+            write.csv(clinical2, con)
+          }
+        )    
       })
     })
     
@@ -71,42 +91,33 @@ shinyServer(function(input, output,session) {
     
     ###TEXT
     output$general <- renderUI({
-        if(input$dataset_name != "mesothelioma") 
-        {para4 <- paste0("Here is a simple example of clustering based on kmeans, pca and silhouette score. I use a user-inputed dataset called: ",input$dataset_name)}
-        else {para4 <- "Here is a simple example of clustering based on kmeans, pca and silhouette score. I use a mesothelioma clinical and gene expression dataset from <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'>here</a>."}
-        
-        
-        
+        para4 <- "I use a mesothelioma clinical and gene expression dataset from <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'>here</a>.
+        But you can upload your own dataset. Below, I use VST normalised gene expression data. I filtered out low expressed genes and kept only 10% most variable genes to speed things up. 
+        Off course, it's easy to change these filter or make them reactive."
         para5 <- "<br/><br/>" 
         
         HTML(paste(para4,para5, sep = '<br/><br/>'))
         
     })
     
-    output$gene_expression <- renderUI({
-        para5 <- "<br/><br/>" 
-        if(input$dataset_name == "mesothelioma") 
-        {para6 = "Below, I use VST normalised gene expression data. I filtered out low expressed genes and kept only 10% most variable genes to speed things up. Off course, it's easy to change these filter or make them reactive."
-        HTML(paste(para6,para5, sep = '<br/><br/>'))}
-        else {
-            HTML(paste("", sep = '<br/><br/>'))
-        }
-        
+    
+    output$kmeans <- renderUI({
+      para7 <- "Here is a simple example of clustering based on kmeans, pca and silhouette score."
+      para5 <- "<br/><br/>" 
+      HTML(paste(para7,para5,sep = '<br/><br/>'))
     })
     
-    
-    
+    output$dendrogram <- renderUI({
+      para7 <- "Here is a simple example of clustering based on hierchical clustering and cutting a dendrogram using cutree()."
+      para5 <- "<br/><br/>" 
+      HTML(paste(para7,para5,sep = '<br/><br/>'))
+    })
     
     output$clinical <- renderUI({
-        if(input$dataset_name == "mesothelioma") 
-        {para7 <- "Below I add a data table and summary plots. Note that these are reactive based on the K decision above"
+        para7 <- "Below I add a data table and summary plots. Note that these are reactive based on the K decision in the previous tab"
         para5 <- "<br/><br/>" 
-        HTML(paste(para7,para5sep = '<br/><br/>'))} else {
-            HTML(paste("",sep = '<br/><br/>'))
-        }
-            
-        
-    })
+        HTML(paste(para7,para5,sep = '<br/><br/>'))
+        })
     
     
     

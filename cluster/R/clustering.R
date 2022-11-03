@@ -158,27 +158,45 @@ render_summary_data = function(clinical = clinical,variable = colnames(clinical)
     
   }
   
-  if(variable == c("cluster"))
+  if(variable == c("kmeans"))
   {
     summary = rle(sort(clinical[,variable]))
-    summary = data.frame(cluster = summary$values,Nb_of_patients = summary$lengths)
-    barplot(Nb_of_patients ~ cluster, data = summary,main ="cluster",col = colors,ylab = "Number of patients")
+    summary = data.frame(kmeans = summary$values,Nb_of_patients = summary$lengths)
+    barplot(Nb_of_patients ~ kmeans, data = summary,main ="Clusters kmeans",col = colors,ylab = "Number of patients")
+    
+  }
+  
+  if(variable == c("dendrogram"))
+  {
+    summary = rle(sort(clinical[,variable]))
+    summary = data.frame(dendrogram = summary$values,Nb_of_patients = summary$lengths)
+    barplot(Nb_of_patients ~ dendrogram, data = summary,main ="Clusters dendrogram",col = colors,ylab = "Number of patients")
     
   }
 }
 
 
-render_detailed_silhouette = function(input_pca_data = data.pca,k = 2,colors = wes_colors){
-  km <- kmeans(input_pca_data$x[,1:10], centers = k, nstart=25)
-  ss <- silhouette(km$cluster, dist(input_pca_data$x))
-  plot(ss,col = colors[1:k],nmax = 10,main = paste0("Detailed Silhouette plot for k = ",k))
-}
+render_detailed_silhouette = function(input_data = data[[2]],k = 2,colors = wes_colors,type=c("kmeans","dendrogram")){
+  if(type == "kmeans"){
+    input_pca_data.pca = prcomp(input_data[,1:ncol(input_data)], center = TRUE,scale. = TRUE)
+    km <- kmeans(input_pca_data.pca$x[,1:10], centers = k, nstart=25)
+    ss <- silhouette(km$cluster, dist(input_pca_data.pca$x))
+    rownames(ss) = names(km$cluster)
+  }
+    
+  if(type == "dendrogram"){
+    cl <- hclust(dist(input_data))
+    ss <- silhouette(cutree(cl, k=k) ,dist(input_data), title=title(main = 'Good'))
+    rownames(ss) = cl$labels
+  }
+  plot(ss,col = colors[1:k],max.strlen=20,nmax.lab = 200,cex.lab = 0.5,main = paste0("Detailed Silhouette plot for k = ",k)) 
+    }
+
+
+hc = function(gexp = data[[2]]){
+  stats::heatmap(t(gexp))
+  }
 
 
 
-
-toto = function(data.pca=data.pca,k = 2,colors = wes_colors){
-  
-  plot(1:10)
-}
   
