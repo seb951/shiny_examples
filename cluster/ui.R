@@ -3,11 +3,11 @@ library(shiny)
 library(cluster)
 library(DT)
 library(wesanderson)
+library(shinythemes)
 
-shinyUI(navbarPage(title = "Clustering example",
+shinyUI(navbarPage(title = "Clustering example",theme = shinytheme("cerulean"),
                    header = list(
-    h4(" sebastien.renaut@gmail.com"),
-    h4(" fall 2022"),
+    strong("sebastien.renaut@gmail.com, fall 2022"),
     htmlOutput("general")),
     tabPanel("Kmeans",
              sidebarPanel(
