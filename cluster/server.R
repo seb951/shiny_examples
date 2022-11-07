@@ -113,11 +113,17 @@ shinyServer(function(input, output,session) {
         HTML(para4,sep = '<br/><br/>')
     })
     
+    output$general <- renderUI({
+      para7 <- "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I use a publicly available <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'>mesotheliama dataset</a> (clinical and gene expression data) as an example on how you can cluster gene expression data and report results interactively.
+      <a href='https://en.wikipedia.org/wiki/Mesothelioma'>Mesothelioma </a> is a type of cancer that develops from the thin layer of tissue that covers many of the internal organs (known as the mesothelium), but mainly lungs.
+      But you can upload your own dataset using the input buttons to the left.
+      I cluster based on either k means or hierchichal clustering (cutree method)."
+      para5 <- "<br/><br/>" 
+      HTML(paste(para7,para5,sep = '<br/><br/>'))
+    })
     
     output$kmeans <- renderUI({
-      para7 <- "I use a (VST normalised) mesothelioma gene expression dataset from <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'>here</a>.
-        I filtered out low expressed genes and kept only 10% most variable genes to speed things up. 
-        But you can upload your own dataset using the input buttons to the left. Below are the results of clustering based on kmeans, pca and silhouette score."
+      para7 <- "I use a (VST normalised) mesothelioma gene expression dataset. Below are the results of clustering based on kmeans, pca and silhouette score."
       para5 <- "<br/><br/>" 
       HTML(paste(para7,para5,sep = '<br/><br/>'))
     })
@@ -129,7 +135,7 @@ shinyServer(function(input, output,session) {
     })
     
     output$clinical <- renderUI({
-        para7 <- "Below are the clinical data, both in summarized graphs and in a datatable. You can download the datatable. Note that these are reactive based on the K decisions in the previous tabs"
+        para7 <- "Below are the clinical data from the mesothelioma dataset, both in summarized graphs and in a datatable (note that only a relevant subset of clinical data is used). You can download the datatable. Note that these are reactive based on the K decisions in the previous tabs."
         para5 <- "<br/><br/>" 
         HTML(paste(para7,para5,sep = '<br/><br/>'))
         })

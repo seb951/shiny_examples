@@ -5,8 +5,13 @@ library(DT)
 library(wesanderson)
 library(shinythemes)
 
-shinyUI(navbarPage(title = "Clustering example",theme = shinytheme("cerulean"),
-                   header = list(
+shinyUI(navbarPage(title = strong("Clustering gene expression"),
+                   theme = shinytheme("cerulean"),
+                   tags$head(
+                       tags$style(type = "text/css", ".container-fluid {padding-left:10px;
+                padding-right:10px; margin-right:10px; margin-left:10px;}")),
+                   header = list(strong("General description"),htmlOutput("general")), 
+                   footer = list(
     htmlOutput("credential")),
     tabPanel("Kmeans",
              sidebarPanel(
