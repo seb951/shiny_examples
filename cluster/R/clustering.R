@@ -56,7 +56,7 @@ renderpca = function(input_data=data[[2]],pcX=1,pcY=2,k = 2,colors = wes_colors,
   colors_val = as.character(colors_val$km.cluster)
   eigen_vector = input_pca_data.pca$sdev^2 
   pve= round(eigen_vector/sum(eigen_vector)*100,2)
-  plot(input_pca_data.pca$x[,pcX],input_pca_data.pca$x[,pcY],xlab = paste0("PC",pcX," (",pve[pcX]," %)"),ylab =paste0("PC",pcY," (",pve[pcY]," %)"),col=colors_val,pch=19,lwd=3,main = "Principal Component Analysis \n (grouping according to kmeans)")
+  plot(input_pca_data.pca$x[,pcX],input_pca_data.pca$x[,pcY],xlab = paste0("PC",pcX," (",pve[pcX]," %)"),ylab =paste0("PC",pcY," (",pve[pcY]," %)"),col=colors_val,pch=19,lwd=3,main = paste0("Principal Component Analysis \n (grouping according to ",type,")"))
   #biplot(data,choices=c(pcX,pcY))
   }
 
