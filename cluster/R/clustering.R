@@ -90,8 +90,8 @@ read_mesothelioma = function(path = "data/"){
       {
       sd[i] = sd(rnaseq_most_expressed[i,-1])
     }
-    rnaseq_most_expressed_var = rnaseq_most_expressed[sd>quantile(sd,seq(0,1,by=0.1))[10],]
-    write.csv(rnaseq_most_expressed_var,paste0(path,"rnaseq_most_expr_meso.csv"),row.names=F)
+    rnaseq_most_expressed_var = rnaseq_most_expressed[sd>quantile(sd,seq(0,1,by=0.1))[5],]
+    write.csv(rnaseq_most_expressed_var,paste0(path,"rnaseq_most_expr_meso50.csv"),row.names=F)
   
     #final cleanup
     rnaseq_most_expressed = read.csv(paste0(path,"rnaseq_most_expr_meso.csv"),row.names = 1)
@@ -219,7 +219,7 @@ render_detailed_silhouette = function(input_data = data[[2]],k = 2,colors = wes_
 
 hc = function(gexp = data[[2]],max_genes=200){
   gexp_max = t(gexp)[1:max_genes,]
-  stats::heatmap(gexp_max)
+  stats::heatmap(gexp_max,main="Heatmap (genes X samples)")
   }
 
 

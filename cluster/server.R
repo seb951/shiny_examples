@@ -123,7 +123,7 @@ shinyServer(function(input, output,session) {
     })
     
     output$dendrogram <- renderUI({
-      para7 <- "Here is a simple example of clustering based on hierchical clustering and cutting a dendrogram with a defined number of groups (k). The heatmap shows a maximum of 200 genes, for visualisation purposes"
+      para7 <- "Here is a simple example of clustering based on hierchical clustering and cutting a dendrogram with a defined number of groups (k)."
       para5 <- "<br/><br/>" 
       HTML(paste(para7,para5,sep = '<br/><br/>'))
     })
