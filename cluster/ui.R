@@ -7,8 +7,7 @@ library(shinythemes)
 
 shinyUI(navbarPage(title = "Clustering example",theme = shinytheme("cerulean"),
                    header = list(
-    strong("sebastien.renaut@gmail.com, fall 2022"),
-    htmlOutput("general")),
+    htmlOutput("credential")),
     tabPanel("Kmeans",
              sidebarPanel(
                fileInput("GEXP_file","Gene Expression dataset (.csv with header)", accept=".csv", width = NULL, placeholder = ""),
@@ -19,36 +18,39 @@ shinyUI(navbarPage(title = "Clustering example",theme = shinytheme("cerulean"),
                                   selected = c(1,2),
                                   choiceValues =  1:8)
              ),
-             mainPanel(h4("Kmeans"),
+             mainPanel(h4("The gene expression dataset (Kmeans)"),
                        htmlOutput("kmeans"),
                        plotOutput("sil"),
                        plotOutput("detailedsil"),
                        plotOutput("pca"))
     ),
     
-    tabPanel("Hierarchical",
+    tabPanel("Hierarchical clustering",
              sidebarPanel(
-               sliderInput("k_selected_hc","Select a K to cut tree",min = 2, max = 8, value = 2),
+               sliderInput("k_selected_hc","Select a K to cut (samples) dendrogram ",min = 2, max = 8, value = 2),
              ),
              mainPanel(
-                 h4("Hierchical Clustering"),
+                 h4("The gene expression dataset (Hierchical Clustering)"),
                htmlOutput("dendrogram"),
                plotOutput("heatmap"),
-               plotOutput("detailedsil_hc")
+               plotOutput("sil_hc"),
+               plotOutput("detailedsil_hc"),
+               plotOutput("pca_hc")
              )
     ),
     tabPanel("Summary",
              sidebarPanel(
                radioButtons("variable", "Choose a clinical variable to display:",
                             selected = "age",
-                            choices= c("kmeans","dendrogram","age","stage","histology","gender","survival"))
+                            choices= c("kmeans","dendrogram","age","stage","histology","gender","survival")),
+               downloadButton('downloadData', 'Download Clinical Data')
              ),
                 mainPanel(
-                  h4("The Clinical Dataset"),
+                  h4("The Clinical dataset (summary stats)"),
                  htmlOutput("clinical"),
                    plotOutput("summary_data")),
              mainPanel(
-                 downloadLink('downloadData', 'Download Clinical Data'),
+                
                  DT::dataTableOutput("mesotable"))
     )
     

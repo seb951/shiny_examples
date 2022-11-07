@@ -29,18 +29,36 @@ shinyServer(function(input, output,session) {
     cl <- hclust(data.dist)
     
     output$pca = renderPlot({
-        renderpca(data.pca,
+        renderpca(data[[2]],
                  pcX=as.numeric(input$pc[1]),
                  pcY=as.numeric(input$pc[2]),
-                 k = input$k_selected)
+                 k = input$k_selected,
+                 type= "kmeans")
+    })
+    
+    output$pca_hc = renderPlot({
+      renderpca(data[[2]],
+                pcX=1,
+                pcY=2,
+                k = input$k_selected_hc,
+                type = "dendrogram")
     })
     
     
     output$sil = renderPlot({
-        rendersilhouette(data.pca,
+        rendersilhouette(data[[2]],
                          k_start=2,
-                         k_end=10)
+                         k_end=10,
+                         type = "kmeans")
     })
+    
+    output$sil_hc = renderPlot({
+      rendersilhouette(data[[2]],
+                       k_start=2,
+                       k_end=10,
+                       type = "dendrogram")
+    })
+    
     output$detailedsil = renderPlot({
       render_detailed_silhouette(input_data = data[[2]],k = input$k_selected,type = "kmeans")
     })
@@ -90,31 +108,28 @@ shinyServer(function(input, output,session) {
 })
     
     ###TEXT
-    output$general <- renderUI({
-        para4 <- "I use a mesothelioma clinical and gene expression dataset from <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'>here</a>.
-        But you can upload your own dataset. Below, I use VST normalised gene expression data. I filtered out low expressed genes and kept only 10% most variable genes to speed things up. 
-        Off course, it's easy to change these filter or make them reactive."
-        para5 <- "<br/><br/>" 
-        
-        HTML(paste(para4,para5, sep = '<br/><br/>'))
-        
+    output$credential <- renderUI({
+        para4 <- "&nbsp;&nbsp;&nbsp;sebastien.renaut@gmail.com, 2022"
+        HTML(para4,sep = '<br/><br/>')
     })
     
     
     output$kmeans <- renderUI({
-      para7 <- "Here is a simple example of clustering based on kmeans, pca and silhouette score."
+      para7 <- "I use a (VST normalised) mesothelioma gene expression dataset from <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'>here</a>.
+        I filtered out low expressed genes and kept only 10% most variable genes to speed things up. 
+        But you can upload your own dataset using the input buttons to the left. Below are the results of clustering based on kmeans, pca and silhouette score."
       para5 <- "<br/><br/>" 
       HTML(paste(para7,para5,sep = '<br/><br/>'))
     })
     
     output$dendrogram <- renderUI({
-      para7 <- "Here is a simple example of clustering based on hierchical clustering and cutting a dendrogram using cutree()."
+      para7 <- "Here is a simple example of clustering based on hierchical clustering and cutting a dendrogram with a defined number of groups (k). The heatmap shows a maximum of 200 genes, for visualisation purposes"
       para5 <- "<br/><br/>" 
       HTML(paste(para7,para5,sep = '<br/><br/>'))
     })
     
     output$clinical <- renderUI({
-        para7 <- "Below I add a data table and summary plots. Note that these are reactive based on the K decision in the previous tab"
+        para7 <- "Below are the clinical data, both in summarized graphs and in a datatable. You can download the datatable. Note that these are reactive based on the K decisions in the previous tabs"
         para5 <- "<br/><br/>" 
         HTML(paste(para7,para5,sep = '<br/><br/>'))
         })
