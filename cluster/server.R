@@ -8,20 +8,18 @@ source("R/clustering.R")
 shinyServer(function(input, output,session) {
     observe({
       if(is.null(input$GEXP_file)){
-        data = read_mesothelioma()
-        print("gexpNULL,clinicalEITHER")}
+        data = read_mesothelioma()}
+      
       if(!is.null(input$GEXP_file) & is.null(input$CLINICAL_file)){
         data_gexp = read_data_gexp(file=input$GEXP_file$datapath)
         data_clinical = data.frame(age = rep(0,nrow(data_gexp)), stage = 0,histology = 0, gender = 0,survival = 0)
-        data = list(data_clinical,data_gexp)      
-        print("gexpNOTNULL,clinicalNULL")}
+        data = list(data_clinical,data_gexp)}
+      
       if(!is.null(input$GEXP_file) & !is.null(input$CLINICAL_file)) {
-        print(input$GEXP_file)
-        print(input$CLINICAL_file)
         data_gexp = read_data_gexp(file=input$GEXP_file$datapath)
         data_clinical = read_data_clinical(file=input$CLINICAL_file$datapath)
         data = list(data_clinical,data_gexp)                     
-        print("NOTNULL")}
+        }
  
         
     data.pca <- prcomp(data[[2]][,1:ncol(data[[2]])], center = TRUE,scale. = TRUE)
@@ -108,36 +106,32 @@ shinyServer(function(input, output,session) {
 })
     
     ###TEXT
-    output$credential <- renderUI({
-        para4 <- "&nbsp;&nbsp;&nbsp;sebastien.renaut@gmail.com, 2022"
-        HTML(para4,sep = '<br/><br/>')
-    })
-    
     output$general <- renderUI({
-      para7 <- "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I use a publicly available <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'>mesotheliama dataset</a> (clinical and gene expression data) as an example on how you can cluster gene expression data and report results interactively.
-      <a href='https://en.wikipedia.org/wiki/Mesothelioma'>Mesothelioma </a> is a type of cancer that develops from the thin layer of tissue that covers many of the internal organs (known as the mesothelium), but mainly lungs.
-      But you can upload your own dataset using the input buttons to the left.
-      I cluster based on either k means or hierchichal clustering (cutree method)."
-      para5 <- "<br/><br/>" 
-      HTML(paste(para7,para5,sep = '<br/><br/>'))
+      para7 <- "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Here, I use a publicly available <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'> dataset</a> as an example on how you can cluster gene expression data and report results interactively.
+      This dataset contains gene expression and clinical data obtained from 87 cancer (mesothelioma) patients. <a href='https://en.wikipedia.org/wiki/Mesothelioma'>Mesothelioma </a> is a type of cancer that develops from the thin layer of tissue that covers many of the internal organs (the mesothelium) and mainly affects lungs.
+      <br/><br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alternatively, you can upload your own gene expression dataset (<b>genes X patients</b>, <i>.csv</i> file of normalized counts) and clinical data (<b>patients X attributes</b>, <i>.csv</i> file) in the Kmeans tab, using the input buttons to the left.
+      <br/><br/>"
+      HTML(para7)
     })
     
     output$kmeans <- renderUI({
-      para7 <- "I use a (VST normalised) mesothelioma gene expression dataset. Below are the results of clustering based on kmeans, pca and silhouette score."
-      para5 <- "<br/><br/>" 
-      HTML(paste(para7,para5,sep = '<br/><br/>'))
+      para7 <- "Below are the results of clustering based on kmeans,silhouette score to choose an optimal k value and pca for visualisation. I use a (VST normalised) gene expression dataset, where I keep only the 10% most variables genes above a specific expression threshold (4.2).
+      <br/><br/>" 
+      HTML(para7)
     })
     
     output$dendrogram <- renderUI({
-      para7 <- "Here is a simple example of clustering based on hierchical clustering and cutting a dendrogram with a defined number of groups (k)."
-      para5 <- "<br/><br/>" 
-      HTML(paste(para7,para5,sep = '<br/><br/>'))
+      para7 <- "Clustering based on cuting the sample dendrogram in a fixed number of groups k. Note that heatmap contains only 200 genes for cleaner visualisation.
+      <br/><br/>"
+      HTML(para7)
     })
     
     output$clinical <- renderUI({
-        para7 <- "Below are the clinical data from the mesothelioma dataset, both in summarized graphs and in a datatable (note that only a relevant subset of clinical data is used). You can download the datatable. Note that these are reactive based on the K decisions in the previous tabs."
-        para5 <- "<br/><br/>" 
-        HTML(paste(para7,para5,sep = '<br/><br/>'))
+        para7 <- "Below are the clinical data from the mesothelioma example dataset, both in summarized plots and in a downloadable datatable (only a relevant subset of clinical data is used for simplicity). 
+        <br/><br/> Note that these ouputs are reactive based on the K decisions in the two previous tabs.
+        <br/><br/>"
+        HTML(para7)
         })
     
     

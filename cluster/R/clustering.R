@@ -36,6 +36,25 @@ rendersilhouette <- function(input_data =  data[[2]], k_start=2,k_end=5,
   plot(multi_k[,1],multi_k[,2], type='b', col=colors, pch = 19, lwd = 3,main="Silhouette score \n gene expression dataset", xlab='Number of clusters (k)', ylab='Average Silhouette Scores', frame=FALSE)
 }
 
+
+
+render_detailed_silhouette = function(input_data = data[[2]],k = 2,colors = wes_colors,type=c("kmeans","dendrogram")){
+  if(type == "kmeans"){
+    input_pca_data.pca = prcomp(input_data[,1:ncol(input_data)], center = TRUE,scale. = TRUE)
+    km <- kmeans(input_pca_data.pca$x[,1:10], centers = k, nstart=25)
+    ss <- silhouette(km$cluster, dist(input_pca_data.pca$x))
+    rownames(ss) = names(km$cluster)
+  }
+  
+  if(type == "dendrogram"){
+    cl <- hclust(dist(input_data))
+    ss <- silhouette(cutree(cl, k=k) ,dist(input_data), title=title(main = 'Good'))
+    rownames(ss) = cl$labels
+  }
+  plot(ss,col = colors[1:k],max.strlen=20,nmax.lab = 200,cex.names = 0.2,main = paste0("Detailed Silhouette plot for k = ",k)) 
+}
+
+
 ###
 renderpca = function(input_data=data[[2]],pcX=1,pcY=2,k = 2,colors = wes_colors,type="kmeans")
   {
@@ -200,27 +219,12 @@ render_summary_data = function(clinical = clinical,variable = colnames(clinical)
 }
 
 
-render_detailed_silhouette = function(input_data = data[[2]],k = 2,colors = wes_colors,type=c("kmeans","dendrogram")){
-  if(type == "kmeans"){
-    input_pca_data.pca = prcomp(input_data[,1:ncol(input_data)], center = TRUE,scale. = TRUE)
-    km <- kmeans(input_pca_data.pca$x[,1:10], centers = k, nstart=25)
-    ss <- silhouette(km$cluster, dist(input_pca_data.pca$x))
-    rownames(ss) = names(km$cluster)
-  }
-    
-  if(type == "dendrogram"){
-    cl <- hclust(dist(input_data))
-    ss <- silhouette(cutree(cl, k=k) ,dist(input_data), title=title(main = 'Good'))
-    rownames(ss) = cl$labels
-  }
-  plot(ss,col = colors[1:k],max.strlen=20,nmax.lab = 200,cex.lab = 0.5,main = paste0("Detailed Silhouette plot for k = ",k)) 
-    }
-
-
 hc = function(gexp = data[[2]],max_genes=200){
   gexp_max = t(gexp)[1:max_genes,]
-  stats::heatmap(gexp_max,main="Heatmap (genes X samples)")
+  stats::heatmap(gexp_max,main=list("Heatmap (genes X samples)",cex = 1.1))
   }
+
+
 
 
 
