@@ -7,32 +7,50 @@ library(wesanderson)
 
 wes_colors = c(wes_palettes$GrandBudapest1,wes_palettes$GrandBudapest2,wes_palettes$Zissou1,wes_palettes$Rushmore)
 ###
-rendersilhouette <- function(input_data =  data[[2]], k_start=2,k_end=5,
-                             colors = wes_colors,type= "kmeans")
-  {
+
+
+clustering_statistics <- function(input_data =  data[[2]], k_start=2,k_end=5,type= "kmeans")
+{
   #k results
   input_pca_data.pca = prcomp(input_data[,1:ncol(input_data)], center = TRUE,scale. = TRUE)
-  multi_k = data.frame(k=k_start:k_end,mean_sil=0)
+  multi_k = data.frame(k=k_start:k_end,mean_sil=0,twss=0)
   
   if(type == "kmeans"){
-  
-  for(k in k_start:k_end){
-    km <- kmeans(input_pca_data.pca$x[,1:10], centers = k, nstart=25)
-    ss <- silhouette(km$cluster, dist(input_pca_data.pca$x))
-    multi_k[k-1,2] = mean(ss[, 3])
+    
+    for(k in k_start:k_end){
+      km <- kmeans(input_pca_data.pca$x[,1:10], centers = k, nstart=25)
+      ss <- silhouette(km$cluster, dist(input_pca_data.pca$x))
+      multi_k[k-1,2] = mean(ss[, 3])
+      multi_k[k-1,3] = km$tot.withinss
     }
   }
-    
+  
   if(type == "dendrogram"){
     for(k in k_start:k_end){
       cl <- hclust(dist(input_data))
       km <- list(cluster = cutree(cl, k=k))
       ss <- silhouette(cutree(cl, k=k) ,dist(input_data), title=title(main = 'Good'))
       multi_k[k-1,2] = mean(ss[, 3])
+      
+      #this is a crutch for now...
+      multi_k[k-1,3] = kmeans(input_pca_data.pca$x[,1:10], centers = k, nstart=25)$tot.withinss
     }
   }
+  multi_k
+}
   
   
+#####  
+renderstwss <- function(multi_k =  clustering_statistics(data[[2]]),
+                        colors = wes_colors)
+{
+  plot(multi_k[,1],multi_k[,3], type='b', col=colors, pch = 19, lwd = 3,main="Total within sum of square \n gene expression dataset", xlab='Number of clusters (k)', ylab='Total Within Sum of Square', frame=FALSE)
+}
+
+
+rendersilhouette <- function(multi_k =  clustering_statistics(data[[2]]),
+                             colors = wes_colors)
+  {
   plot(multi_k[,1],multi_k[,2], type='b', col=colors, pch = 19, lwd = 3,main="Silhouette score \n gene expression dataset", xlab='Number of clusters (k)', ylab='Average Silhouette Scores', frame=FALSE)
 }
 

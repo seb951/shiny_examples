@@ -42,19 +42,30 @@ shinyServer(function(input, output,session) {
                 type = "dendrogram")
     })
     
+    multi_k = clustering_statistics(data[[2]],
+                                    k_start=2,
+                                    k_end=10,
+                                    type = "kmeans")
+    
+    multi_k_hc = clustering_statistics(data[[2]],
+                                       k_start=2,
+                                       k_end=10,
+                                       type = "dendrogram")
     
     output$sil = renderPlot({
-        rendersilhouette(data[[2]],
-                         k_start=2,
-                         k_end=10,
-                         type = "kmeans")
+        rendersilhouette(multi_k = multi_k)
     })
     
     output$sil_hc = renderPlot({
-      rendersilhouette(data[[2]],
-                       k_start=2,
-                       k_end=10,
-                       type = "dendrogram")
+      rendersilhouette(multi_k = multi_k_hc)
+    })
+    
+    output$twss = renderPlot({
+      renderstwss(multi_k = multi_k_hc)
+    })
+    
+    output$twss_hc = renderPlot({
+      renderstwss(multi_k = multi_k_hc)
     })
     
     output$detailedsil = renderPlot({
@@ -80,6 +91,26 @@ shinyServer(function(input, output,session) {
         }
     })
     
+    output$downloadGexp <- downloadHandler(
+      filename = function() {
+        paste('Gexpr_data_', Sys.Date(), '.csv', sep='')
+      },
+      content = function(con) {
+        write.csv(data[[2]], con)
+      }
+    ) 
+    
+    output$downloadHeatmap <- downloadHandler(
+      filename = function() { paste0("heatmap_",Sys.Date(),'.png') },
+      content = function(file) {
+        png(file,res= 200,width = 800, height = 800)
+        hc(gexp = data[[2]]) 
+        dev.off()
+      }
+    ) 
+    
+    
+    
     ####CLINICAL
     observe({
       km = kmeans(data.pca$x[,1:10], centers = input$k_selected, nstart=25)
@@ -88,7 +119,7 @@ shinyServer(function(input, output,session) {
       output$mesotable = DT::renderDataTable({clinical2})
       
       output$summary_data = renderPlot({
-        render_summary_data(clinical = clinical2,variable = input$variable) 
+        render_summary_data(clinical = clinical2,variable = input$variable) })
         
       
         output$downloadData <- downloadHandler(
@@ -99,7 +130,7 @@ shinyServer(function(input, output,session) {
             write.csv(clinical2, con)
           }
         )    
-      })
+      
     })
     
         

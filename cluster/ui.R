@@ -8,6 +8,7 @@ library(shinythemes)
 shinyUI(navbarPage(title = strong("Data Report"),
                    theme = shinytheme("cerulean"),
                    tabPanel("Summary",
+                            icon = icon("clipboard"),
                             mainPanel(width =12,strong("General description"),
                                      htmlOutput("general")),
                             sidebarPanel(
@@ -18,14 +19,16 @@ shinyUI(navbarPage(title = strong("Data Report"),
                             tags$footer("sebastien.renaut@gmail.com --- 2022")),
                   
                    navbarMenu("Clustering",
-    tabPanel("Kmeans",
-             mainPanel(width =12,h4("Gene expression clustering (Kmeans)"),
+                              icon = icon("circle-nodes"),
+    tabPanel("K-means",
+             mainPanel(width =12,h4("Gene expression clustering (K-means)"),
                       htmlOutput("kmeans")),
              sidebarPanel(
-              sliderInput("k_selected","Select a K based on Silhouette plots",min = 2, max = 8, value = 2)),
+              sliderInput("k_selected","Select a K for kmeans clustering",min = 2, max = 8, value = 2)),
              mainPanel(
                        plotOutput("sil"),
-                       plotOutput("detailedsil")),
+                       plotOutput("detailedsil"),
+                       plotOutput("twss")),
              
              sidebarPanel(
                  checkboxGroupInput("pc", "Choose two PCs for visualisation",
@@ -39,16 +42,17 @@ shinyUI(navbarPage(title = strong("Data Report"),
     
     tabPanel("Hierarchical clustering",
              mainPanel(width =12,
-                 h4("Gene expression clustering (Hierchical)"),
+                 h4("Gene expression clustering (Hierarchical)"),
                htmlOutput("dendrogram")
                
                
                
              ),
-             sidebarPanel(sliderInput("k_selected_hc","Select a K based on Silhouette plots to cut dendrogram ",min = 2, max = 8, value = 2)
+             sidebarPanel(sliderInput("k_selected_hc","Select a K for Hierarchical clustering",min = 2, max = 8, value = 2)
                           ),
              mainPanel(plotOutput("sil_hc"),
                        plotOutput("detailedsil_hc"),
+                       plotOutput("twss_hc"),
                        plotOutput("pca_hc")),
              tags$footer("sebastien.renaut@gmail.com --- 2022")
     )
@@ -57,6 +61,7 @@ shinyUI(navbarPage(title = strong("Data Report"),
     
     
     tabPanel("Clinical",
+             icon = icon("microscope"),
              sidebarPanel(
                  radioButtons("variable", "Choose a clinical variable to display:",
                               selected = "age",
@@ -79,6 +84,10 @@ shinyUI(navbarPage(title = strong("Data Report"),
     tabPanel("Gene Expression",
              sidebarPanel(
                  downloadButton('downloadGexp', 'Download Gene Expression'))),
+    tabPanel("Plots",
+             sidebarPanel(
+                 downloadButton('downloadHeatmap', 'Download Heatmap'))),
+    
     
     
     
