@@ -84,7 +84,7 @@ shinyServer(function(input, output,session) {
     observe({
       km = kmeans(data.pca$x[,1:10], centers = input$k_selected, nstart=25)
       sil_cl <- silhouette(cutree(cl, k=input$k_selected_hc) ,data.dist, title=title(main = 'Good'))
-      clinical2 = data.frame(kmeans=km$cluster,dendrogram=sil_cl[,2],data[[1]])
+      clinical2 = data.frame(kmeans=km$cluster,hierarchical=sil_cl[,2],data[[1]])
       output$mesotable = DT::renderDataTable({clinical2})
       
       output$summary_data = renderPlot({
@@ -110,7 +110,7 @@ shinyServer(function(input, output,session) {
       para7 <- "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Here, I use a publicly available <a href='https://cran.r-project.org/web/packages/dnapath/vignettes/package_data.html#meso-data'> dataset</a> as an example on how you can cluster gene expression data and report results interactively.
       This dataset contains gene expression and clinical data obtained from 87 cancer (mesothelioma) patients. <a href='https://en.wikipedia.org/wiki/Mesothelioma'>Mesothelioma </a> is a type of cancer that develops from the thin layer of tissue that covers many of the internal organs (the mesothelium) and mainly affects lungs.
       <br/><br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alternatively, you can upload your own gene expression dataset (<b>genes X patients</b>, <i>.csv</i> file of normalized counts) and clinical data (<b>patients X attributes</b>, <i>.csv</i> file) in the Kmeans tab, using the input buttons to the left.
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alternatively, you can upload your own gene expression dataset (<i>.csv</i> file of normalized counts) and clinical data (<i>.csv</i> file), using the input buttons to the left.
       <br/><br/>"
       HTML(para7)
     })
@@ -122,7 +122,8 @@ shinyServer(function(input, output,session) {
     })
     
     output$dendrogram <- renderUI({
-      para7 <- "Clustering based on cuting the sample dendrogram in a fixed number of groups k. Note that heatmap contains only 200 genes for cleaner visualisation.
+      para7 <- "Below are the results of clustering based on cuting a sample dendrogram in a fixed number of groups k,silhouette score to choose an optimal k value and pca for visualisation. I use a (VST normalised) gene expression dataset, where I keep only the 10% most variables genes above a specific expression threshold (4.2). 
+      Clustering based .
       <br/><br/>"
       HTML(para7)
     })

@@ -209,11 +209,11 @@ render_summary_data = function(clinical = clinical,variable = colnames(clinical)
     
   }
   
-  if(variable == c("dendrogram"))
+  if(variable == c("hierarchical"))
   {
     summary = rle(sort(clinical[,variable]))
-    summary = data.frame(dendrogram = summary$values,Nb_of_patients = summary$lengths)
-    barplot(Nb_of_patients ~ dendrogram, data = summary,main ="Clusters dendrogram",col = colors,ylab = "Number of patients")
+    summary = data.frame(hierarchical = summary$values,Nb_of_patients = summary$lengths)
+    barplot(Nb_of_patients ~ hierarchical, data = summary,main ="Clusters hierarchical",col = colors,ylab = "Number of patients")
     
   }
 }
