@@ -60,9 +60,9 @@ shinyUI(navbarPage(title = strong("Data Report"),
              sidebarPanel(
                  radioButtons("variable", "Choose a clinical variable to display:",
                               selected = "age",
-                              choices= c("kmeans","hierarchical","age","stage","histology","gender","survival")),
+                              choices= c("kmeans","hierarchical","age","stage","histology","gender","survival"))
                  
-                 downloadButton('downloadData', 'Download Clinical Data')
+                
              ),
              mainPanel(
                  h4("The Clinical dataset"),
@@ -71,9 +71,19 @@ shinyUI(navbarPage(title = strong("Data Report"),
              mainPanel(
                  DT::dataTableOutput("mesotable",width = "66%"),
                  tags$table(tableFooter("sebastien.renaut@gmail.com --- 2022")))
-             
-             
-                 
+    ),
+    navbarMenu("Downloads",icon = icon("floppy-disk"),
+    tabPanel("Clinical/Clustering",
+             sidebarPanel(
+                 downloadButton('downloadData', 'Download Clinical/Clustering'))),
+    tabPanel("Gene Expression",
+             sidebarPanel(
+                 downloadButton('downloadGexp', 'Download Gene Expression'))),
+    
+    
+    
+    
+    
     )
     
     
