@@ -23,13 +23,16 @@ shinyUI(navbarPage(title = strong("Data Report"),
     tabPanel("K-means",
              mainPanel(width =12,h4("Gene expression clustering (K-means)"),
                       htmlOutput("kmeans")),
-             sidebarPanel(
-              sliderInput("k_selected","Select a K for kmeans clustering",min = 2, max = 8, value = 2)),
-             mainPanel(
-                       plotOutput("sil"),
-                       plotOutput("detailedsil"),
-                       plotOutput("twss")),
              
+             mainPanel("",width =12,
+                           fluidRow(
+                               splitLayout(cellWidths = c("50%", "50%"), plotOutput("sil"), plotOutput("twss"))
+                           )), 
+             sidebarPanel("",
+                 sliderInput("k_selected","Select a K for kmeans clustering",min = 2, max = 8, value = 2)),
+             mainPanel("",
+                 plotOutput("detailedsil")
+             ),
              sidebarPanel(
                  checkboxGroupInput("pc", "Choose two PCs for visualisation",
                                     choiceNames = paste0("PC",1:8),
@@ -44,15 +47,14 @@ shinyUI(navbarPage(title = strong("Data Report"),
              mainPanel(width =12,
                  h4("Gene expression clustering (Hierarchical)"),
                htmlOutput("dendrogram")
-               
-               
-               
              ),
+             mainPanel("",width =12,
+                       fluidRow(
+                           splitLayout(cellWidths = c("50%", "50%"), plotOutput("sil_hc"), plotOutput("twss_hc"))
+                       )), 
              sidebarPanel(sliderInput("k_selected_hc","Select a K for Hierarchical clustering",min = 2, max = 8, value = 2)
                           ),
-             mainPanel(plotOutput("sil_hc"),
-                       plotOutput("detailedsil_hc"),
-                       plotOutput("twss_hc"),
+             mainPanel(plotOutput("detailedsil_hc"),
                        plotOutput("pca_hc")),
              tags$footer("sebastien.renaut@gmail.com --- 2022")
     )

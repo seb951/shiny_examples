@@ -147,13 +147,13 @@ shinyServer(function(input, output,session) {
     })
     
     output$kmeans <- renderUI({
-      para7 <- "Below are the results of clustering based on kmeans,silhouette score to choose an optimal k value and pca for visualisation. I use a (VST normalised) gene expression dataset, where I keep only the 10% most variables genes above a specific expression threshold (4.2).
+      para7 <- "Below are the results of clustering based on kmeans, silhouette score & TWSS to choose an optimal k value and pca for visualisation. I use a (VST normalised) gene expression dataset, where I keep only the 10% most variables genes above a specific expression threshold (4.2).
       <br/><br/>" 
       HTML(para7)
     })
     
     output$dendrogram <- renderUI({
-      para7 <- "Below are the results of clustering based on cuting a sample dendrogram in a fixed number of groups k,silhouette score to choose an optimal k value and pca for visualisation. I use a (VST normalised) gene expression dataset, where I keep only the 10% most variables genes above a specific expression threshold (4.2). 
+      para7 <- "Below are the results of clustering based on cuting a sample dendrogram in a fixed number of groups k, silhouette score & TWSS to choose an optimal k value and pca for visualisation. I use a (VST normalised) gene expression dataset, where I keep only the 10% most variables genes above a specific expression threshold (4.2). 
       Clustering based .
       <br/><br/>"
       HTML(para7)
