@@ -243,7 +243,15 @@ hc = function(gexp = data[[2]],max_genes=200){
   }
 
 
+plots = function(multi_k = multi_k, data = data,clustering_metrics = '',k = 2) {
+  switch(clustering_metrics,
+       silhouette = rendersilhouette(multi_k = multi_k),
+       detailed = render_detailed_silhouette(input_data = data[[2]],k = k,type = 'kmeans'),
+       twss = renderstwss(multi_k = multi_k),
+       silhouette_hc = rendersilhouette(multi_k = multi_k),
+       detailed_hc = render_detailed_silhouette(input_data = data[[2]],k = k,type = 'dendrogram'),
+       twss_hc = renderstwss(multi_k = multi_k)
+  )
 
+}
 
-
-  

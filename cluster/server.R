@@ -55,30 +55,15 @@ shinyServer(function(input, output,session) {
                                        k_end=10,
                                        type = "dendrogram")
     
-    if(input$clustering_metrics == 'silhouette') {
-      output$clustering_plots = renderPlot({rendersilhouette(multi_k = multi_k)})
-    }
     
-    if(input$clustering_metrics == 'twss') {
-      output$clustering_plots = renderPlot({renderstwss(multi_k = multi_k_hc)})
-    }
+    output$clustering_plots = renderPlot({
+      plots(multi_k = multi_k, data = data, clustering_metrics = input$clustering_metrics,k = input$k_selected)
+    })
     
-    if(input$clustering_metrics == 'detailed') {
-      output$clustering_plots = renderPlot({render_detailed_silhouette(input_data = data[[2]],k = input$k_selected,type = "kmeans")})
-    }
+    output$hc_plots = renderPlot({
+      plots(multi_k = multi_k_hc, data = data, clustering_metrics = input$hc_metrics,k = input$k_selected_hc)
+    })
     
-    ####hierarchical plots
-    if(input$hc_metrics == 'silhouette_hc') {
-      output$hc_plots = renderPlot({rendersilhouette(multi_k = multi_k_hc)})
-    }
-    
-    if(input$hc_metrics == 'twss_hc') {
-      output$hc_plots = renderPlot({renderstwss(multi_k = multi_k_hc)})
-    }
-    
-    if(input$hc_metrics == 'detailed_hc') {
-      output$hc_plots = renderPlot({render_detailed_silhouette(input_data = data[[2]],k = input$k_selected_hc,type = "dendrogram")})
-    }
 
     output$heatmap = renderPlot({
       hc(gexp = data[[2]])})
@@ -157,8 +142,7 @@ shinyServer(function(input, output,session) {
     })
     
     output$dendrogram <- renderUI({
-      para7 <- "Below are the results of clustering based on cuting a sample dendrogram in a fixed number of groups k, silhouette score & TWSS to choose an optimal k value and pca for visualisation. I use a (VST normalised) gene expression dataset, where I keep only the 10% most variables genes above a specific expression threshold (4.2). 
-      Clustering based .
+      para7 <- "Below are the results of clustering based on cuting a sample dendrogram in a fixed number of groups k, silhouette score & TWSS to choose an optimal k value and pca for visualisation. I use a (VST normalised) gene expression dataset, where I keep only the 10% most variables genes above a specific expression threshold (4.2).
       <br/><br/>"
       HTML(para7)
     })
