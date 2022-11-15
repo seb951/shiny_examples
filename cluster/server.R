@@ -6,6 +6,7 @@ library(wesanderson)
 source("R/clustering.R")
 
 shinyServer(function(input, output,session) {
+  #get the data ready
     observe({
       if(is.null(input$GEXP_file)){
         data = read_mesothelioma()}
@@ -26,6 +27,8 @@ shinyServer(function(input, output,session) {
     data.dist = dist(data[[2]])
     cl <- hclust(data.dist)
     
+    
+    #make plots
     output$pca = renderPlot({
         renderpca(data[[2]],
                  pcX=as.numeric(input$pc[1]),
@@ -52,33 +55,34 @@ shinyServer(function(input, output,session) {
                                        k_end=10,
                                        type = "dendrogram")
     
-    output$sil = renderPlot({
-        rendersilhouette(multi_k = multi_k)
-    })
+    if(input$clustering_metrics == 'silhouette') {
+      output$clustering_plots = renderPlot({rendersilhouette(multi_k = multi_k)})
+    }
     
-    output$sil_hc = renderPlot({
-      rendersilhouette(multi_k = multi_k_hc)
-    })
+    if(input$clustering_metrics == 'twss') {
+      output$clustering_plots = renderPlot({renderstwss(multi_k = multi_k_hc)})
+    }
     
-    output$twss = renderPlot({
-      renderstwss(multi_k = multi_k_hc)
-    })
+    if(input$clustering_metrics == 'detailed') {
+      output$clustering_plots = renderPlot({render_detailed_silhouette(input_data = data[[2]],k = input$k_selected,type = "kmeans")})
+    }
     
-    output$twss_hc = renderPlot({
-      renderstwss(multi_k = multi_k_hc)
-    })
+    ####hierarchical plots
+    if(input$hc_metrics == 'silhouette_hc') {
+      output$hc_plots = renderPlot({rendersilhouette(multi_k = multi_k_hc)})
+    }
     
-    output$detailedsil = renderPlot({
-      render_detailed_silhouette(input_data = data[[2]],k = input$k_selected,type = "kmeans")
-    })
+    if(input$hc_metrics == 'twss_hc') {
+      output$hc_plots = renderPlot({renderstwss(multi_k = multi_k_hc)})
+    }
     
+    if(input$hc_metrics == 'detailed_hc') {
+      output$hc_plots = renderPlot({render_detailed_silhouette(input_data = data[[2]],k = input$k_selected_hc,type = "dendrogram")})
+    }
+
     output$heatmap = renderPlot({
       hc(gexp = data[[2]])})
     
-    output$detailedsil_hc = renderPlot({
-      render_detailed_silhouette(input_data = data[[2]],k = input$k_selected_hc,type = "dendrogram")})
-    
-
     observe({
         if(length(input$pc) > 2){
             selected = tail(input$pc,2)
@@ -171,3 +175,6 @@ shinyServer(function(input, output,session) {
     
     
 })
+
+
+

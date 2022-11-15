@@ -20,19 +20,19 @@ shinyUI(navbarPage(title = strong("Data Report"),
                   
                    navbarMenu("Clustering",
                               icon = icon("circle-nodes"),
-    tabPanel("K-means",
-             mainPanel(width =12,h4("Gene expression clustering (K-means)"),
-                      htmlOutput("kmeans")),
-             
-             mainPanel("",width =12,
-                           fluidRow(
-                               splitLayout(cellWidths = c("50%", "50%"), plotOutput("sil"), plotOutput("twss"))
-                           )), 
+        tabPanel("K-means",
+             mainPanel(width =12,h4("Gene expression clustering (K-means)"),htmlOutput("kmeans")),
              sidebarPanel("",
-                 sliderInput("k_selected","Select a K for kmeans clustering",min = 2, max = 8, value = 2)),
+                         radioButtons("clustering_metrics", "Select clustering metric:",
+                                      c("Silhouette" = "silhouette",
+                                        "Detailed Silhouette" = "detailed",
+                                        "Total Within Sum of Square" = "twss")),
+                         br(),
+                         sliderInput("k_selected","Select a K for kmeans clustering",min = 2, max = 8, value = 2)
+                         ),
              mainPanel("",
-                 plotOutput("detailedsil")
-             ),
+                       plotOutput('clustering_plots')
+                       ), 
              sidebarPanel(
                  checkboxGroupInput("pc", "Choose two PCs for visualisation",
                                     choiceNames = paste0("PC",1:8),
@@ -48,13 +48,15 @@ shinyUI(navbarPage(title = strong("Data Report"),
                  h4("Gene expression clustering (Hierarchical)"),
                htmlOutput("dendrogram")
              ),
-             mainPanel("",width =12,
-                       fluidRow(
-                           splitLayout(cellWidths = c("50%", "50%"), plotOutput("sil_hc"), plotOutput("twss_hc"))
-                       )), 
-             sidebarPanel(sliderInput("k_selected_hc","Select a K for Hierarchical clustering",min = 2, max = 8, value = 2)
+             sidebarPanel("",
+                          radioButtons("hc_metrics", "Select clustering metric:",
+                                       c("Silhouette" = "silhouette_hc",
+                                         "Detailed Silhouette" = "detailed_hc",
+                                         "Total Within Sum of Square" = "twss_hc")),
+                          br(),
+                 sliderInput("k_selected_hc","Select a K for Hierarchical clustering",min = 2, max = 8, value = 2)
                           ),
-             mainPanel(plotOutput("detailedsil_hc"),
+             mainPanel(plotOutput("hc_plots"),
                        plotOutput("pca_hc")),
              tags$footer("sebastien.renaut@gmail.com --- 2022")
     )
