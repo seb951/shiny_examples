@@ -84,13 +84,13 @@ shinyUI(navbarPage(title = strong("Data Report"),
     navbarMenu("Downloads",icon = icon("floppy-disk"),
     tabPanel("Clinical/Clustering",
              sidebarPanel(
-                 downloadButton('downloadData', 'Download Clinical/Clustering'))),
+                 downloadButton('downloadData', 'Clinical/Clustering'))),
     tabPanel("Gene Expression",
              sidebarPanel(
-                 downloadButton('downloadGexp', 'Download Gene Expression'))),
+                 downloadButton('downloadGexp', 'Gene Expression'))),
     tabPanel("Plots",
              sidebarPanel(
-                 downloadButton('downloadHeatmap', 'Download Heatmap'))),
+                 downloadButton('downloadHeatmap', 'Heatmap'))),
     
     
     
